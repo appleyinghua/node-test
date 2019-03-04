@@ -1,0 +1,99 @@
+文件路径中的./可以省略，模块加载的相对路径中的./不能省略。
+express 使用art-template 渲染引擎
+1.安装 npm install art-template --save    npm install express-art-template【依赖于前者】
+2.配置 app.engine('html',require('express-art-template')) 其中HTML表示对html文件进行渲染，
+原本是art后缀，这里自己做了更改。
+3.使用的话 res.render('login.html',{ })
+express中使用静态资源
+app.use('/public',express.static('./public/')); 意思是读取public目录下的文件，第一个参数是自己起的名字
+express中的重定向 res.redirect('/');
+express 中获取post方法的表单提交数据，用第三方包 body-parser
+1.安装 npm install body-parser --save
+2.配置 var bodyParser = require('body-parser');
+       app.use(bodyParser.urlencoded({extended:false}));
+       app.use(bodyParser.json());
+3.使用 req.body = req.query
+路由：表示带有映射的一张表  请求方法 + 请求路径 + 请求处理函数 = 路由
+时时监控用到nodemon npm install....
+express中路由的使用
+var express = require('express');
+var router = express.Router();
+router.get('',function(req,res){ });
+module.exports = router;
+封装路由
+封装students增删改查方法---异步事件需要有回调函数
+exports.find(function(callback){
+    fs.readFile(dbPath,'utf8',function(err,data){
+        if(err) {callback(err)};
+        var students = JSON.parse(data).students; //数组形式
+        callback(null,students);
+    })
+})
+exports.findById(function(id,callback){
+    fs.readFile(dbPath,'utf8',function(err,data) {
+        if(err) { callback(err) };
+        var students = JSON.parse(data).students; //数组
+        var stu  = students.find(function(item){  //从文件取出来的id都是字符串格式--转换为数字
+            return item.id === parseInt(id);
+        })
+        callback(nul,stu);
+    }
+})
+exports.save(function(student,callback){
+     fs.readFile(daPath,'utf8',function(err,data){
+        if(err) { callback(err) };
+        var students = JSON.parse(data).students; //数组
+        student.id = students[students.length-1].id+1;
+        students.push(student);
+        //把数据重写入文件，需要把数组转换成字符串再写入
+        var stuData = JSON.stringify({
+            students:students
+        })
+        fs.writeFile(dbPath,stuData,function(err){
+            if(err){ callback(err) };
+            callback(null);
+        })
+     })
+})
+exports.update(function(student,callback){
+     fs.readFile(daPath,'utf8',function(err,data){
+          if(err) { callback(err) };
+          var students = JSON.parse(data).students; //数组
+          var stuId = parseInt(student.id);
+          var ret = students.find(function(item){
+                return students.id === stuId;
+          })
+          for(var key in student){
+                ret[key] = student[key]
+          };
+          //重新写入文件
+          //把对象数据转化为字符串
+           var fileData = JSON.stringify({
+                  students:students
+            })
+           fs.writeFile(dbPath,fileData,function (err) {
+                 if(err) {
+                     return callback(err)
+                 }
+                 callback(null)
+           })
+     })
+})
+exports.delete(function(id,callback){
+     fs.readFile(daPath,'utf8',function(err,data){
+          if(err) { callback(err) };
+          var students = JSON.parse(data).students; //数组
+          var stuId = students.findIndex(function(item){
+            return item.id = parseInt(id); //得到下标索引
+          })
+          students.splice(stuId,1); //删除该行数据
+          //重写到文件中
+          var stuData = JSON.stringify(
+          {students:students}
+          )
+          fs.writeFile(dbPath,stuData,function(err){
+                      if(err){ callback(err) };
+                      callback(null);
+                  })
+     }
+})

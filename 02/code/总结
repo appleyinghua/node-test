@@ -1,0 +1,34 @@
+apache简单功能实现
+在本地创建文件夹www,并在文件夹中创建文件，可以在本地设置端口访问到
+将本地创建文件夹页面的HTML提取出来，取名为template.html
+
+var fs = require('fs'); //加载文件系统模块，用来读取文件并读取目录及目录名
+//fs.readFile(文件名，function(err,data){}) data 是二进制形式的
+var template = require('art-template'); //加载js模板进行服务器端渲染
+//template.render(要渲染的字符串，{渲染对象}) ; 第一个参数应为data.toString()
+var http = require('http'); //加载http模块，用于创建服务器
+var server = http.createServer(); //创建服务器
+server.on('request',function(req,res){
+    var url = req.url; //请求对象包含一些请求信息，如请求路径
+    var load = 'D:/www';
+    fs.readFile('./template.html',function(err,data){
+        if (err) {return res.end('read fail')}
+        fs.readdir(load,function(err,files){
+            if(err) { return res.end("can not found files"); }
+
+            var ret = template.render(data.toString(),{
+                files:files
+            })
+            res.end(ret);
+        })
+    })
+})
+server.listen(3000,function(){
+    console.log('服务器正在启动...')
+})
+
+//服务端进行渲染
+如 template.html中存在<h2>我的名字是{{name}}</h2>等等信息
+在模板渲染的时候对应写 {name:"John"}这种形式，而且模板引擎只认双花括号
+遍历的形式是{{each hobbies}} {{$value}} {{/each}}
+服务端渲染有利于SEO搜索引擎优化，方便爬虫爬取工作。

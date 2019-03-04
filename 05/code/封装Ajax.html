@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ajax</title>
+</head>
+<body>
+<script>
+    function get(url,callback) {
+        var oReq = new XMLHttpRequest();
+        oReq.onload =function () {
+            callback(oReq.responseText);
+        };//异步事件，通过回调函数获取其中的数据
+        oReq.open("GET", "data.json",true);
+        oReq.send();
+    }
+    get('data.json',function (data) {
+        console.log(data);
+    })
+
+</script>
+</body>
+</html>

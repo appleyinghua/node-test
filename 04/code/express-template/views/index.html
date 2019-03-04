@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>实现简单的留言功能</title>
+    <!--浏览器收到HTML响应内容之后，就要开始从上往下进行解析，在解析过程发现
+    link，script，img，iframe,video,audio等具有src或href属性（具有外链的资源）的时候，浏览器会
+    自动对这些资源发起请求-->
+    <link rel="stylesheet" href="/public/css/bootstrap.css">
+</head>
+<body>
+<img src="/public/img/peishi3.jpg" alt=""/>
+<div class="header container">
+    <div class="page-header">
+        <h1>Example page header<small>Subtext for header</small></h1>
+        <a class="btn btn-success" href="/post.html">发表留言</a>
+    </div>
+</div>
+<div class="comments container">
+    <ul class="list-group">
+        {{each comments}}
+        <li class="list-group-item">{{$value.name}}说：{{$value.message}}<span class="pull-right">     {{$value.time}}</span></li>
+        {{/each}}
+    </ul>
+</div>
+</body>
+</html>
